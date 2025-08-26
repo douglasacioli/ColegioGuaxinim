@@ -13,7 +13,6 @@ namespace ColegioGuaxinim.Presentation.Controllers
             _professorService = professorService ?? throw new ArgumentNullException(nameof(professorService));
         }
 
-        [HttpGet("professor/{professorId}/alunos")]
         public async Task<IActionResult> Lista(int professorId, CancellationToken ct)
         {
             ViewBag.ProfessorId = professorId;
@@ -21,16 +20,20 @@ namespace ColegioGuaxinim.Presentation.Controllers
             return View(alunos);
         }
 
-        [HttpPost("professor/{professorId}/alunos/importar"), ValidateAntiForgeryToken]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Importar(int professorId, IFormFile arquivo, CancellationToken ct)
         {
             var (ins, erros) = await _alunoService.ImportarAsync(professorId, arquivo, ct);
             TempData["Mensagem"] = $"{ins} aluno(s) importado(s).";
             if (erros.Count > 0) TempData["Erros"] = string.Join("<br/>", erros);
-            return RedirectToAction(nameof(Index), new { professorId });
+
+            return RedirectToAction(nameof(Lista), new { professorId });
         }
 
-        [HttpDelete("professor/{professorId}/alunos/{alunoId}"), ValidateAntiForgeryToken]
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int professorId, int alunoId, CancellationToken ct)
         {
             var ok = await _alunoService.ExcluirAsync(professorId, alunoId, ct);

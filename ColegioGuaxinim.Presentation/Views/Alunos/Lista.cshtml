@@ -3,47 +3,49 @@
     ViewData["Title"] = "Alunos";
     var professorId = ViewBag.ProfessorId;
 }
+<form id="form-token">@Html.AntiForgeryToken()</form>
 
 <h2>Lista de Alunos</h2>
 
-<a href="@Url.Action("Index", "Professor")" class="btn btn-secondary mb-3">Voltar para Professores</a>
+<a href="@Url.Action("Index", "Professores")" class="btn btn-secondary mb-3">Voltar para Professores</a>
 
-@if (TempData["Mensagens"] is List<string> mensagens)
+@if (TempData["Mensagem"] is string mensagem)
 {
-    foreach (var msg in mensagens)
-    {
-        <div class="alert alert-warning">@msg</div>
-    }
+    <div class="alert alert-success">@Html.Raw(mensagem)</div>
 }
 
-@if (TempData["Inseridos"] != null)
+@if (TempData["Erros"] is string erros)
 {
-    <div class="alert alert-success">Alunos importados com sucesso: @TempData["Inseridos"]</div>
+    <div class="alert alert-warning">@Html.Raw(erros)</div>
 }
 
-<!-- Importação de Alunos -->
-<form asp-action="Importar" method="post" enctype="multipart/form-data" class="mb-4">
+<!-- Importação -->
+<form asp-action="Importar" method="post" enctype="multipart/form-data">
     <input type="hidden" name="professorId" value="@professorId" />
     <div class="form-group">
         <label>Importar Alunos (.txt)</label>
         <input type="file" name="arquivo" class="form-control" required />
     </div>
-    <button type="submit" class="btn btn-info mt-2">Importar</button>
+    <button type="submit" class="btn btn-info mt-2"> <i class="bi bi-upload"></i> Importar</button>
 </form>
+
+<hr />
 
 @if (!Model.Any())
 {
-    <div class="alert alert-info">Nenhum aluno cadastrado para este professor.</div>
+    <div class="alert alert-info mt-3">
+        Nenhum aluno cadastrado ainda para este professor.
+    </div>
 }
 else
 {
-    <table class="table table-bordered">
+    <table class="table table-striped mt-3">
         <thead>
             <tr>
                 <th>Nome</th>
                 <th>Mensalidade</th>
                 <th>Data de Vencimento</th>
-                <th>Ação</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -61,12 +63,20 @@ else
         </tbody>
     </table>
 }
+<div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
 
 @section Scripts {
     <script>
         function excluirAluno(id) {
-            fetch(`/Aluno/Excluir?id=${id}&professorId=@professorId`, {
-                method: 'DELETE'
+            const professorId = @ViewBag.ProfessorId;
+            const token = document.querySelector('#form-token input[name="__RequestVerificationToken"]').value;
+
+            fetch(`/Alunos/Delete?professorId=${professorId}&alunoId=${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'RequestVerificationToken': token
+                }
             }).then(r => {
                 if (r.ok) {
                     document.getElementById(`linha-aluno-${id}`).remove();

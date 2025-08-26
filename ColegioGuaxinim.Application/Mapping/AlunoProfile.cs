@@ -8,7 +8,8 @@ namespace ColegioGuaxinim.Application.Mapping
     {
         public AlunoProfile()
         {
-            CreateMap<Aluno, AlunoListaDto>();
+            CreateMap<Aluno, AlunoListaDto>()
+              .ConstructUsing(a => new AlunoListaDto(a.Id, a.Nome, a.Mensalidade, a.DataDeVencimento));
         }
     }
 }

@@ -9,7 +9,7 @@ namespace ColegioGuaxinim.Infrastructure.Data
         public GuaxinimDbContext CreateDbContext(string[] args)
         {
             var config = new ConfigurationBuilder()
-               .SetBasePath(Directory.GetCurrentDirectory())
+               .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "ColegioGuaxinim.Presentation"))
                .AddJsonFile("appsettings.json", optional: false)
                .Build();
 

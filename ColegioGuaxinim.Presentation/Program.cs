@@ -1,3 +1,4 @@
+using ColegioGuaxinim.Application.Options;
 using ColegioGuaxinim.Infrastructure.Data;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.Configure<ImportacaoAlunosOptions>(
+    builder.Configuration.GetSection("ImportacaoAlunos"));
 
 builder.Services.AddDbContext<GuaxinimDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));

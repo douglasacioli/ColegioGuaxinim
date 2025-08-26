@@ -106,7 +106,7 @@ Esse script cria as tabelas `Professor` e `Aluno` com as constraints apropriadas
 ## 👨‍💻 Autor
 
 Douglas Acioli 🦝  
-Contato: [Seu LinkedIn/GitHub]
+Contato: [https://www.linkedin.com/in/douglasacioli/]
 
 
 

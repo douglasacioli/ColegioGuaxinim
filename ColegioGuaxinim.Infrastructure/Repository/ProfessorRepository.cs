@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ColegioGuaxinim.Infrastructure.Repository
 {
-    public class ProfessorRepository :
-    IProfessorRepositoryReader, IProfessorRepositoryWriter
+    public class ProfessorRepository : IProfessorRepository
+    
     {
         private readonly GuaxinimDbContext _context;
 
@@ -29,14 +29,14 @@ namespace ColegioGuaxinim.Infrastructure.Repository
             return _context.Professores.FirstOrDefaultAsync(p => p.Id == id, ct);
         }
 
-        public async Task AdicionarAsync(Professor professor, CancellationToken ct)
+        public async Task<Professor> AdicionarAsync(Professor professor, CancellationToken ct)
         {
             await _context.Professores.AddAsync(professor, ct);
             await _context.SaveChangesAsync(ct);
-            return;
+            return professor;
         }
 
-        public async Task AtualizarAsync(Professor professor, CancellationToken ct = default)
+        public async Task<Professor> AtualizarAsync(Professor professor, CancellationToken ct = default)
         {
             var professoresAtual = await _context.Professores.FirstOrDefaultAsync(p => p.Id == professor.Id, ct);
 
@@ -45,18 +45,27 @@ namespace ColegioGuaxinim.Infrastructure.Repository
 
             professoresAtual.Nome = professor.Nome;
             professoresAtual.BloquearTempoDeImportacao = professor.BloquearTempoDeImportacao;
+            await _context.SaveChangesAsync(ct);
+            return professoresAtual;
         }
 
-        public Task RemoverProfessorAsync(Professor professor, CancellationToken ct = default)
+        public async Task<bool> RemoverProfessorAsync(int id, CancellationToken ct = default)
         {
-            if (professor is null) throw new ArgumentNullException(nameof(professor));
+            var professor = await _context.Professores.FirstOrDefaultAsync(p => p.Id == id, ct);
+
+            if (professor == null)
+                throw new Exception("Professor Não encontrado");
+
             _context.Professores.Remove(professor);
-            return Task.CompletedTask;
+            await _context.SaveChangesAsync(ct);
+            return true;
         }
+
 
         public Task SalvarAlteracoesAsync(CancellationToken ct = default)
         {
            return _context.SaveChangesAsync(ct);
         }
+       
     }
 }

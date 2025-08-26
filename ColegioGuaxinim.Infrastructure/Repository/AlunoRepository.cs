@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ColegioGuaxinim.Infrastructure.Repository
 {
-    public class AlunoRepository : IAlunoRepositoryReader, IAlunoRepositoryWriter
+    public class AlunoRepository : IAlunoRepository
     {
         private readonly GuaxinimDbContext _context;
 
@@ -23,6 +23,20 @@ namespace ColegioGuaxinim.Infrastructure.Repository
 
         }
 
+        public async Task<Aluno> AtualizarAsync(Aluno aluno, CancellationToken ct = default)
+        {
+            var alunoAtual = await _context.Alunos.FirstOrDefaultAsync(p => p.Id == aluno.Id, ct);
+
+            if (alunoAtual == null)
+                throw new Exception("Aluno não encontrado");
+
+            alunoAtual.Nome = aluno.Nome;
+            alunoAtual.Mensalidade = aluno.Mensalidade;
+            alunoAtual.DataDeVencimento = aluno.DataDeVencimento;
+            await _context.SaveChangesAsync(ct);
+            return alunoAtual;
+        }
+
         public Task<List<Aluno>> ListarPorProfessorAsync(int professorId, CancellationToken ct = default)
         {
             return _context.Alunos.AsNoTracking().Where(p => p.ProfessorId == professorId).OrderBy(a => a.Nome).ToListAsync(ct);
@@ -33,16 +47,23 @@ namespace ColegioGuaxinim.Infrastructure.Repository
             return _context.Alunos.FirstOrDefaultAsync(a => a.Id == id && a.ProfessorId == professorId, ct);
         }
 
-        public Task RemoverAlunoAsync(Aluno aluno, CancellationToken ct = default)
+        public async Task<bool> RemoverAlunoAsync(int id, CancellationToken ct = default)
         {
-            if (aluno is null) throw new ArgumentNullException(nameof(aluno));
+            var aluno = await _context.Alunos.FirstOrDefaultAsync(p => p.Id == id, ct);
+
+            if (aluno == null)
+                throw new Exception("Aluno não encontrado");
+
             _context.Alunos.Remove(aluno);
-            return Task.CompletedTask;
+            await _context.SaveChangesAsync(ct);
+            return true;
         }
+       
 
         public Task SalvarAlteracoesAsync(CancellationToken ct = default)
         {
             return _context.SaveChangesAsync(ct);
         }
+       
     }
 }

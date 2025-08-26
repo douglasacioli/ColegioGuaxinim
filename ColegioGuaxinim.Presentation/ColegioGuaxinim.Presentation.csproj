@@ -15,4 +15,8 @@
     <ProjectReference Include="..\ColegioGuaxinim.Domain\ColegioGuaxinim.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.8" />
+  </ItemGroup>
+
 </Project>

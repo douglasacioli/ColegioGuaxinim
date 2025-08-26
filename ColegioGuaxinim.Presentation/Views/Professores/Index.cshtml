@@ -1,0 +1,35 @@
+﻿@model List<ColegioGuaxinim.Application.DTO.ProfessorDTO.ProfessorListaDto>
+@{
+    ViewData["Title"] = "Professores";
+}
+
+<h2>Professores</h2>
+
+<a class="btn btn-success mb-3" href="@Url.Action("Criar", "Professor")">Cadastrar Novo Professor</a>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Nenhum professor cadastrado.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var prof in Model)
+            {
+                <tr>
+                    <td>@prof.Nome</td>
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="@Url.Action("Lista", "Aluno", new { professorId = prof.Id })">Ver Alunos</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

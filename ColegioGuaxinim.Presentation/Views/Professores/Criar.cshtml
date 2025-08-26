@@ -1,0 +1,21 @@
+﻿@model ColegioGuaxinim.Application.DTO.ProfessorDTO.ProfessorCriarDto
+@{
+    ViewData["Title"] = "Cadastrar Professor";
+}
+
+<h2>Cadastrar Professor</h2>
+
+<form asp-action="Criar" method="post">
+    <div class="form-group">
+        <label asp-for="Nome"></label>
+        <input asp-for="Nome" class="form-control" />
+        <span asp-validation-for="Nome" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3">Salvar</button>
+    <a href="@Url.Action("Index", "Professor")" class="btn btn-secondary mt-3">Voltar</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

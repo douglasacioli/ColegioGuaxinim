@@ -1,6 +1,8 @@
 using ColegioGuaxinim.Application.Mapping;
 using ColegioGuaxinim.Application.Options;
+using ColegioGuaxinim.Application.Service;
 using ColegioGuaxinim.Infrastructure.Data;
+using ColegioGuaxinim.Infrastructure.Repository;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
@@ -15,6 +17,12 @@ builder.Services.Configure<ImportacaoAlunosOptions>(
 
 builder.Services.AddDbContext<GuaxinimDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
+
+builder.Services.AddScoped<IProfessorService, ProfessorService>();
+builder.Services.AddScoped<IAlunoService, AlunoService>();
+
+builder.Services.AddScoped<IProfessorRepository, ProfessorRepository>();
+builder.Services.AddScoped<IAlunoRepository, AlunoRepository>();
 
 builder.Services.AddAutoMapper(typeof(ProfessorProfile));
 builder.Services.AddAutoMapper(typeof(AlunoProfile));

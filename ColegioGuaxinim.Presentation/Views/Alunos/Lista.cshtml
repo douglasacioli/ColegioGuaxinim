@@ -1,0 +1,79 @@
+﻿@model List<ColegioGuaxinim.Application.DTO.AlunoDTO.AlunoListaDto>
+@{
+    ViewData["Title"] = "Alunos";
+    var professorId = ViewBag.ProfessorId;
+}
+
+<h2>Lista de Alunos</h2>
+
+<a href="@Url.Action("Index", "Professor")" class="btn btn-secondary mb-3">Voltar para Professores</a>
+
+@if (TempData["Mensagens"] is List<string> mensagens)
+{
+    foreach (var msg in mensagens)
+    {
+        <div class="alert alert-warning">@msg</div>
+    }
+}
+
+@if (TempData["Inseridos"] != null)
+{
+    <div class="alert alert-success">Alunos importados com sucesso: @TempData["Inseridos"]</div>
+}
+
+<!-- Importação de Alunos -->
+<form asp-action="Importar" method="post" enctype="multipart/form-data" class="mb-4">
+    <input type="hidden" name="professorId" value="@professorId" />
+    <div class="form-group">
+        <label>Importar Alunos (.txt)</label>
+        <input type="file" name="arquivo" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-info mt-2">Importar</button>
+</form>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Nenhum aluno cadastrado para este professor.</div>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Mensalidade</th>
+                <th>Data de Vencimento</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var aluno in Model)
+            {
+                <tr id="linha-aluno-@aluno.Id">
+                    <td>@aluno.Nome</td>
+                    <td>R$ @aluno.Mensalidade.ToString("N2")</td>
+                    <td>@aluno.DataVencimento.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="excluirAluno(@aluno.Id)">Excluir</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@section Scripts {
+    <script>
+        function excluirAluno(id) {
+            fetch(`/Aluno/Excluir?id=${id}&professorId=@professorId`, {
+                method: 'DELETE'
+            }).then(r => {
+                if (r.ok) {
+                    document.getElementById(`linha-aluno-${id}`).remove();
+                } else {
+                    alert("Erro ao excluir aluno.");
+                }
+            });
+        }
+    </script>
+}

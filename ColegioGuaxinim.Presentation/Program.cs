@@ -1,3 +1,4 @@
+using ColegioGuaxinim.Application.Mapping;
 using ColegioGuaxinim.Application.Options;
 using ColegioGuaxinim.Infrastructure.Data;
 using Microsoft.AspNetCore.Localization;
@@ -14,6 +15,9 @@ builder.Services.Configure<ImportacaoAlunosOptions>(
 
 builder.Services.AddDbContext<GuaxinimDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
+
+builder.Services.AddAutoMapper(typeof(ProfessorProfile));
+builder.Services.AddAutoMapper(typeof(AlunoProfile));
 
 var app = builder.Build();
 

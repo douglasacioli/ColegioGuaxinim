@@ -5,32 +5,43 @@
 }
 <form id="form-token">@Html.AntiForgeryToken()</form>
 
-<h2>Lista de Alunos</h2>
+<h2 class="mb-4">📚 Alunos</h2>
 
-<a href="@Url.Action("Index", "Professores")" class="btn btn-secondary mb-3">Voltar para Professores</a>
-
+<!-- Alertas -->
 @if (TempData["Mensagem"] is string mensagem)
 {
-    <div class="alert alert-success">@Html.Raw(mensagem)</div>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @Html.Raw(mensagem)
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 }
 
 @if (TempData["Erros"] is string erros)
 {
-    <div class="alert alert-warning">@Html.Raw(erros)</div>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        @Html.Raw(erros)
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 }
 
-<!-- Importação -->
-<form asp-action="Importar" method="post" enctype="multipart/form-data">
+<!-- Formulário de Importação -->
+<form asp-action="Importar" method="post" enctype="multipart/form-data" class="border rounded p-3 bg-light mb-4">
     <input type="hidden" name="professorId" value="@professorId" />
-    <div class="form-group">
-        <label>Importar Alunos (.txt)</label>
-        <input type="file" name="arquivo" class="form-control" required />
+
+    <div class="mb-3">
+        <label for="arquivo" class="form-label fw-bold">Importar Alunos (.txt)</label>
+        <input type="file" name="arquivo" id="arquivo" class="form-control" required />
+        <div class="form-text">Formato: NomeAluno||ValorMensalidade||DataVencimento</div>
     </div>
-    <button type="submit" class="btn btn-info mt-2"> <i class="bi bi-upload"></i> Importar</button>
+
+    <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-info">
+            <i class="bi bi-upload"></i> Importar
+        </button>
+    </div>
 </form>
 
-<hr />
-
+<!-- Lista de Alunos -->
 @if (!Model.Any())
 {
     <div class="alert alert-info mt-3">
@@ -39,30 +50,41 @@
 }
 else
 {
-    <table class="table table-striped mt-3">
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Mensalidade</th>
-                <th>Data de Vencimento</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var aluno in Model)
-            {
-                <tr id="linha-aluno-@aluno.Id">
-                    <td>@aluno.Nome</td>
-                    <td>R$ @aluno.Mensalidade.ToString("N2")</td>
-                    <td>@aluno.DataVencimento.ToString("dd/MM/yyyy")</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" onclick="excluirAluno(@aluno.Id)">Excluir</button>
-                    </td>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle shadow-sm">
+            <thead class="table-purple">
+                <tr>
+                    <th>Nome</th>
+                    <th>Mensalidade</th>
+                    <th>Vencimento</th>
+                    <th class="text-center" style="width: 120px;">Ações</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var aluno in Model)
+                {
+                    <tr id="linha-aluno-@aluno.Id">
+                        <td>@aluno.Nome</td>
+                        <td>R$ @aluno.Mensalidade.ToString("N2")</td>
+                        <td>@aluno.DataVencimento.ToString("dd/MM/yyyy")</td>
+                        <td class="text-center">
+                            <button class="btn btn-outline-danger btn-sm" onclick="excluirAluno(@aluno.Id)">
+                                <i class="bi bi-trash"></i> Excluir
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
+
+<!-- Botão Voltar -->
+<a href="@Url.Action("Index", "Professores")" class="btn btn-outline-primary mt-3">
+    <i class="bi bi-arrow-left"></i> Voltar para Professores
+</a>
+
+<!-- Toast container opcional -->
 <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
 
 @section Scripts {

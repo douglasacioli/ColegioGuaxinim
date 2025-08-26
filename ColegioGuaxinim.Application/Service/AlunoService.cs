@@ -50,7 +50,6 @@ namespace ColegioGuaxinim.Application.Service
         {
             ct.ThrowIfCancellationRequested();
 
-            // 1) Professor válido + RN07 (bloqueio)
             var prof = await _professorRepository.ObterPorIdAsync(professorId, ct);
             if (prof is null)
                 return (0, new() { "Professor não encontrado." });
@@ -62,16 +61,20 @@ namespace ColegioGuaxinim.Application.Service
                 return (0, new() { $"Importação bloqueada. Tente novamente em {Math.Ceiling(faltam.TotalSeconds)}s." });
             }
 
-            // 2) Arquivo
             if (arquivo is null || arquivo.Length == 0)
                 return (0, new() { "Arquivo não enviado ou vazio." });
 
-            // 3) Parse das linhas (Nome||Mensalidade||DataVencimento) — RN06
             var erros = new List<string>();
             var novos = new List<Aluno>();
             int inseridos = 0;
 
             var culture = CultureInfo.GetCultureInfo(_opt.Culture);
+
+            var nomesExistentes = (await _alunoRepository
+                .ListarPorProfessorAsync(professorId, ct))
+                .Select(a => a.Nome.Trim().ToLower())
+                .ToHashSet();
+
 
             using var sr = new StreamReader(arquivo.OpenReadStream());
             string? linha;
@@ -90,6 +93,12 @@ namespace ColegioGuaxinim.Application.Service
                 }
 
                 var nome = partes[0].Trim();
+
+                if (nomesExistentes.Contains(nome.ToLower()))
+                {
+                    erros.Add($"Linha {n}: aluno '{nome}' já cadastrado.");
+                    continue;
+                }
 
                 if (!decimal.TryParse(partes[1].Trim(),
                     NumberStyles.Number | NumberStyles.AllowCurrencySymbol,
@@ -116,14 +125,12 @@ namespace ColegioGuaxinim.Application.Service
                 inseridos++;
             }
 
-            // 4) Persistência dos novos alunos (se houver)
             if (novos.Count > 0)
             {
                 await _alunoRepository.AdicionarVariosAsync(novos, ct);
                 await _alunoRepository.SalvarAlteracoesAsync(ct);
             }
 
-            // 5) Aplicar bloqueio (RN07)
             prof.BloquearTempoDeImportacao = DateTime.UtcNow.AddSeconds(_opt.DuracaoBloqueioSegundos);
             await _professorRepository.AtualizarAsync(prof, ct);
             await _alunoRepository.SalvarAlteracoesAsync(ct);

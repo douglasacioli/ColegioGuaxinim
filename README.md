@@ -43,7 +43,7 @@ Sistema de cadastro de professores e alunos para uma instituição de ensino.
 ### Clone o projeto
 
 ```bash
-git clone https://github.com/seu-usuario/ColegioGuaxinim.git
+git clone https://github.com/douglasacioli/ColegioGuaxinim.git
 cd ColegioGuaxinim
 ```
 

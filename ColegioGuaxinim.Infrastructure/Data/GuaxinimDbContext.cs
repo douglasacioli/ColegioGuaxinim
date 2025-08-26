@@ -16,7 +16,7 @@ namespace ColegioGuaxinim.Infrastructure.Data
                 e.ToTable("Professor");
                 e.HasKey(x => x.Id);
                 e.Property(x => x.Nome).IsRequired().HasMaxLength(120);
-                e.Property(x => x.BloquearTempoDeImportacao);
+                e.Property(x => x.BloquearTempoDeImportacao).HasColumnName("BloquearTempoDeImportacao").HasColumnType("datetime2").IsRequired(false);
                 e.HasMany(x => x.Alunos).WithOne(a => a.Professor).HasForeignKey(a => a.ProfessorId);
             });
 

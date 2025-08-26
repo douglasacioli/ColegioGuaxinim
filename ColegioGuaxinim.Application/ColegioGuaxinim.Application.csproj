@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ColegioGuaxinim.Domain\ColegioGuaxinim.Domain.csproj" />
     <ProjectReference Include="..\ColegioGuaxinim.Infrastructure\ColegioGuaxinim.Infrastructure.csproj" />
   </ItemGroup>
